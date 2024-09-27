@@ -15,8 +15,13 @@ async function getGameByName(name) {
     return db.query(`SELECT * FROM games WHERE name = $1;`, [name]);
 }
 
+async function getGameById(id) {
+    return db.query(`SELECT * FROM games WHERE id = $1;`, [id]);
+}
+
 export const gamesRepository = {
     listGames,
     createGame,
     getGameByName,
+    getGameById,
 };

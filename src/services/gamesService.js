@@ -1,5 +1,5 @@
 import { gamesRepository } from "#repositories";
-import { GameConflictError } from "#errors";
+import { GameConflictError, GameNotFoundError } from "#errors";
 
 async function listGames() {
     const result = await gamesRepository.listGames();
@@ -16,7 +16,18 @@ async function createGame(game) {
     return gamesRepository.createGame(game);
 }
 
+async function getGameById(id) {
+    const result = await gamesRepository.getGameById(id);
+
+    if (result.rowCount === 0) {
+        throw new GameNotFoundError(id);
+    }
+
+    return result.rows[0];
+}
+
 export const gamesService = {
     listGames,
     createGame,
+    getGameById,
 };
