@@ -1,4 +1,5 @@
 import { gamesRepository } from "#repositories";
+import { GameConflictError } from "#errors";
 
 async function listGames() {
     const result = await gamesRepository.listGames();
@@ -9,7 +10,7 @@ async function createGame(game) {
     const result = await gamesRepository.getGameByName(game.name);
 
     if (result.rowCount !== 0) {
-        throw { type: "conflict", message: `A game named ${game.name} already exists` };
+        throw new GameConflictError(game.name);
     }
 
     return gamesRepository.createGame(game);
