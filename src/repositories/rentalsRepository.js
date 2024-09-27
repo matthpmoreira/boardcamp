@@ -15,8 +15,19 @@ async function getRentals() {
     return db.query(`SELECT * FROM rentals;`);
 }
 
+async function getRentalById(id) {
+    return db.query(`SELECT * FROM rentals WHERE id = $1;`, [id]);
+}
+
+async function returnRental(id, returnDate, delayFee) {
+    await db.query(`UPDATE rentals SET "returnDate" = $2 WHERE id = $1;`, [id, returnDate]);
+    await db.query(`UPDATE rentals SET "delayFee" = $2 WHERE id = $1;`, [id, delayFee]);
+}
+
 export const rentalsRepository = {
     createRental,
     getRentalsByGameId,
     getRentals,
+    getRentalById,
+    returnRental,
 };

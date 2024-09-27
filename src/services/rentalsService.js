@@ -1,6 +1,6 @@
 import { gamesService, customersService } from "#services";
 import { rentalsRepository } from "#repositories";
-import { NoStockAvailableError } from "#errors";
+import { NoStockAvailableError, RentalNotFoundError, RentalReturnedError } from "#errors";
 
 async function getRentals() {
     const result = await rentalsRepository.getRentals();
@@ -38,15 +38,47 @@ async function createRental(rental) {
     
     await customersService.getCustomerById(rental.customerId);
 
-    const date = new Date;
-    const dateStr = date.toISOString();
-    const rentDate = dateStr.slice(0, 10);
+    const rentDate = getSqlDate();
     const originalPrice = rental.daysRented * game.pricePerDay;
 
     return rentalsRepository.createRental({ ...rental, rentDate, originalPrice });
 }
 
+async function returnRental(id) {
+    const result = await rentalsRepository.getRentalById(id);
+    const rental = result.rows[0];
+    
+    if (result.rowCount === 0) {
+        throw new RentalNotFoundError(id);
+    }
+
+    if (rental.returnDate != null) {
+        throw new RentalReturnedError(id);
+    }
+
+    const returnDate = getSqlDate();
+    const game = await gamesService.getGameById(rental.gameId);
+    const dayDiff = calcDayDiff(rental.rentDate, returnDate);
+    const delayFee = dayDiff > rental.daysRented ? game.pricePerDay * (dayDiff - rental.daysRented) : 0;
+
+    return rentalsRepository.returnRental(id, returnDate, delayFee);
+}
+
+function getSqlDate() {
+    const date = new Date;
+    const dateStr = date.toISOString();
+    return dateStr.slice(0, 10);
+}
+
+function calcDayDiff(rentTimestamp, returnTimestamp) {
+    const rentDate = new Date(rentTimestamp);
+    const returnDate = new Date(returnTimestamp);
+    const microsecDiff = returnDate - rentDate;
+    return Math.floor(microsecDiff / (1000 * 60 * 60 * 24));
+}
+
 export const rentalsService = {
     getRentals,
     createRental,
+    returnRental,
 }

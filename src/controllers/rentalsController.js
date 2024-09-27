@@ -11,7 +11,14 @@ async function createRental(req, res) {
     res.sendStatus(http.CREATED);
 }
 
+async function returnRental(req, res) {
+    const { id } = req.params;
+    await rentalsService.returnRental(id);
+    res.sendStatus(http.OK);
+}
+
 export const rentalsController = {
     getRentals,
     createRental,
+    returnRental,
 }

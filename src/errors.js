@@ -40,9 +40,23 @@ export class CustomerNotFoundError extends NotFoundError {
     }
 }
 
+export class RentalNotFoundError extends NotFoundError {
+    constructor(id) {
+        super(`No rental with id ${id} found`);
+        this.name = "RentalNotFoundError";
+    }
+}
+
 export class NoStockAvailableError extends Error {
     constructor(id) {
         super(`There's no stock available for game with id ${id}`);
         this.name = "NoStockAvailableError";
+    }
+}
+
+export class RentalReturnedError extends Error {
+    constructor(id) {
+        super(`Rental with id ${id} has already been finished`);
+        this.name = "RentalReturnedError";
     }
 }
