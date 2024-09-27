@@ -11,7 +11,12 @@ async function getRentalsByGameId(id) {
     return db.query(`SELECT * FROM rentals WHERE "gameId" = $1;`, [id]);
 }
 
+async function getRentals() {
+    return db.query(`SELECT * FROM rentals;`);
+}
+
 export const rentalsRepository = {
     createRental,
     getRentalsByGameId,
+    getRentals,
 };

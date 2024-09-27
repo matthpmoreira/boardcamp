@@ -2,6 +2,31 @@ import { gamesService, customersService } from "#services";
 import { rentalsRepository } from "#repositories";
 import { NoStockAvailableError } from "#errors";
 
+async function getRentals() {
+    const result = await rentalsRepository.getRentals();
+    const rentals = result.rows;
+
+    for (const rental of rentals) {
+        const game = await gamesService.getGameById(rental.gameId);
+        const customer = await customersService.getCustomerById(rental.customerId);
+
+        delete rental.gameId;
+        delete rental.customerId;
+
+        rental.game = {
+            id: game.id,
+            name: game.name
+        };
+        
+        rental.customer = {
+            id: customer.id,
+            name: customer.name
+        };
+    }
+
+    return rentals;
+}
+
 async function createRental(rental) {
     const rentals = await rentalsRepository.getRentalsByGameId(rental.gameId);
     const game = await gamesService.getGameById(rental.gameId);
@@ -22,5 +47,6 @@ async function createRental(rental) {
 }
 
 export const rentalsService = {
+    getRentals,
     createRental,
 }
