@@ -1,0 +1,33 @@
+{
+  "name": "boardcamp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-async-errors": "^3.1.1",
+    "http-status": "^1.7.4",
+    "joi": "^17.13.3",
+    "nodemon": "^3.1.7",
+    "pg": "^8.13.0"
+  },
+  "imports": {
+    "#controllers": "./src/controllers/index.js",
+    "#errors": "./src/errors.js",
+    "#middleware": "./src/middleware/index.js",
+    "#repositories": "./src/repositories/index.js",
+    "#routes": "./src/routes/index.js",
+    "#schemas": "./src/schemas/index.js",
+    "#services": "./src/services/index.js"
+  }
+}
