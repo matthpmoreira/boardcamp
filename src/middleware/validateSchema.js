@@ -9,6 +9,7 @@ export function validateSchema(schema) {
             return res.status(http.BAD_REQUEST).send(messages);
         }
 
+        req.body = result.value;
         next();
     }
 }
