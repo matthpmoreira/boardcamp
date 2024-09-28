@@ -20,8 +20,10 @@ async function getRentalById(id) {
 }
 
 async function returnRental(id, returnDate, delayFee) {
-    await db.query(`UPDATE rentals SET "returnDate" = $2 WHERE id = $1;`, [id, returnDate]);
-    await db.query(`UPDATE rentals SET "delayFee" = $2 WHERE id = $1;`, [id, delayFee]);
+    return Promise.all([
+        db.query(`UPDATE rentals SET "returnDate" = $2 WHERE id = $1;`, [id, returnDate]),
+        db.query(`UPDATE rentals SET "delayFee" = $2 WHERE id = $1;`, [id, delayFee])
+    ]);
 }
 
 async function deleteRental(id) {
