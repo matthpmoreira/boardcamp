@@ -1,6 +1,11 @@
 import { gamesService, customersService } from "#services";
 import { rentalsRepository } from "#repositories";
-import { NoStockAvailableError, RentalNotFoundError, RentalReturnedError } from "#errors";
+import {
+    NoStockAvailableError,
+    RentalNotFoundError,
+    RentalNotReturnedError,
+    RentalReturnedError
+} from "#errors";
 
 async function getRentals() {
     const result = await rentalsRepository.getRentals();
@@ -17,7 +22,7 @@ async function getRentals() {
             id: game.id,
             name: game.name
         };
-        
+
         rental.customer = {
             id: customer.id,
             name: customer.name
@@ -35,7 +40,7 @@ async function createRental(rental) {
     if (allGamesRented) {
         throw new NoStockAvailableError(game.id);
     }
-    
+
     await customersService.getCustomerById(rental.customerId);
 
     const rentDate = getSqlDate();
@@ -47,7 +52,7 @@ async function createRental(rental) {
 async function returnRental(id) {
     const result = await rentalsRepository.getRentalById(id);
     const rental = result.rows[0];
-    
+
     if (result.rowCount === 0) {
         throw new RentalNotFoundError(id);
     }
@@ -77,8 +82,24 @@ function calcDayDiff(rentTimestamp, returnTimestamp) {
     return Math.floor(microsecDiff / (1000 * 60 * 60 * 24));
 }
 
+async function deleteRental(id) {
+    const result = await rentalsRepository.getRentalById(id);
+    const rental = result.rows[0];
+
+    if (result.rowCount === 0) {
+        throw new RentalNotFoundError(id);
+    }
+
+    if (rental.returnDate == null) {
+        throw new RentalNotReturnedError(id);
+    }
+
+    return rentalsRepository.deleteRental(id);
+}
+
 export const rentalsService = {
     getRentals,
     createRental,
     returnRental,
+    deleteRental,
 }

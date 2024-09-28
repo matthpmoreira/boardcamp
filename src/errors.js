@@ -60,3 +60,10 @@ export class RentalReturnedError extends Error {
         this.name = "RentalReturnedError";
     }
 }
+
+export class RentalNotReturnedError extends Error {
+    constructor(id) {
+        super(`Rental with id ${id} has not been returned yet`);
+        this.name = "RentalNotReturnedError";
+    }
+}
